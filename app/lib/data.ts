@@ -1,4 +1,5 @@
 import { sql } from '@vercel/postgres';
+import { unstable_noStore as noStore } from 'next/cache';
 import {
   CustomerField,
   CustomersTableType,
@@ -13,17 +14,17 @@ import { formatCurrency } from './utils';
 export async function fetchRevenue() {
   // add nostore() here to prevent the response from being cached.
   // this is equivalent to in fetch(..., {cache: 'no-store'}).
-
+  noStore();
   try {
     // artificially delay a response for demo purposes.
     // don't do this in production :)
 
-    // console.log('fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    console.log('fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
-    // console.log('data fetch completed after 3 seconds.');
+    console.log('data fetch completed after 3 seconds.');
 
     return data.rows;
   } catch (error) {
@@ -33,6 +34,7 @@ export async function fetchRevenue() {
 }
 
 export async function fetchLatestInvoices() {
+  noStore();
   try {
     const data = await sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
@@ -53,6 +55,7 @@ export async function fetchLatestInvoices() {
 }
 
 export async function fetchCardData() {
+  noStore();
   try {
     // you can probably combine these into a single sql query
     // however, we are intentionally splitting them to demonstrate
@@ -92,6 +95,7 @@ export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
 ) {
+  noStore();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -124,6 +128,7 @@ export async function fetchFilteredInvoices(
 }
 
 export async function fetchInvoicesPages(query: string) {
+  noStore();
   try {
     const count = await sql`SELECT COUNT(*)
     FROM invoices
@@ -145,6 +150,7 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 export async function fetchInvoiceById(id: string) {
+  noStore();
   try {
     const data = await sql<InvoiceForm>`
       SELECT
@@ -162,6 +168,7 @@ export async function fetchInvoiceById(id: string) {
       amount: invoice.amount / 100,
     }));
 
+    console.log(invoice); // INVOICE IS AN EMPTY ARRAY []
     return invoice[0];
   } catch (error) {
     console.error('database error:', error);
@@ -170,6 +177,7 @@ export async function fetchInvoiceById(id: string) {
 }
 
 export async function fetchCustomers() {
+  noStore();
   try {
     const data = await sql<CustomerField>`
       SELECT

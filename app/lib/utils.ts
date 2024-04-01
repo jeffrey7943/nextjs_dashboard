@@ -12,12 +12,7 @@ export const formatDateToLocal = (
   locale: string = 'en-US',
 ) => {
   const date = new Date(dateStr);
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  };
-  const formatter = new Intl.DateTimeFormat(locale, options);
+  const formatter = new Intl.DateTimeFormat(locale);
   return formatter.format(date);
 };
 
